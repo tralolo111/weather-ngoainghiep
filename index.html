@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thời tiết khu vực phục vụ ngoại nghiệp · Gia Lai</title>
+<style>
+:root{--s1:#f7f8fa;--s2:#fff;--bd:#e2e5e9;--bdd:#f3c2c2;--bdw:#f6d9a8;--tx2:#6b7280;--warn:#d97706;--acc:#2563eb;--bad:#dc2626;--ok:#15803d;--r:8px}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#eef0f2;margin:0;padding:24px;color:#111827}
+.wrap{max-width:1100px;margin:0 auto}
+.card{background:var(--s1);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:1rem}
+.head h1{font-size:18px;margin:0}.sub{font-size:13px;color:var(--tx2);margin:2px 0 0}
+.acts{display:flex;align-items:center;gap:8px}
+.btn{padding:.5rem .9rem;border-radius:var(--r);border:1px solid var(--bd);background:var(--s2);font-size:13px;font-weight:600;cursor:pointer;color:inherit}
+.btn:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.xl{border-color:#86c99a;color:#166534}
+.ico{width:36px;padding:.5rem 0;font-size:16px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#fff7ed;border:1px solid var(--bdw);border-radius:var(--r);padding:.65rem .9rem;margin-bottom:12px}
+.banner.info{background:#eff6ff;border-color:#bfdbfe}.banner.err{background:#fdecec;border-color:var(--bdd)}
+.banner p{margin:0}.bt{font-size:13px;font-weight:700;color:#9a3412}.bx{font-size:12px;color:#7c2d12}
+.banner.info .bt,.banner.info .bx{color:#1e3a8a}.banner.err .bt,.banner.err .bx{color:#991b1b}
+.banner button{background:none;border:0;font-size:12px;font-weight:600;color:var(--acc);cursor:pointer;padding:0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters input,.filters select{padding:.5rem .7rem;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;background:var(--s2)}
+.filters input{flex:1;min-width:220px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:6px 12px;font-size:12px}.chip b{font-size:15px;margin-left:4px}
+.chip.ok b{color:var(--ok)}.chip.warn b{color:var(--warn)}.chip.bad b{color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:.75rem}
+.box.bad{border-color:var(--bdd)}.box.warn{border-color:var(--bdw)}
+.row{display:flex;justify-content:space-between;align-items:start;gap:6px}.nm{font-size:14px;font-weight:600}.wi{font-size:18px}
+.tp{font-size:20px;font-weight:600;margin:6px 0 2px}.st{font-size:12px;color:var(--tx2);margin:0}
+.st.bad{color:var(--bad)}.st.warn{color:var(--warn)}.ex{font-size:11px;color:var(--tx2);margin:4px 0 0}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--tx2);flex-wrap:wrap;gap:8px}
+.pages{display:flex;gap:4px}.pages button{min-width:30px;padding:4px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);cursor:pointer;font-size:12px}
+.pages button.on{background:#111827;color:#fff;border-color:#111827}.pages button:disabled{opacity:.4;cursor:default}
+.src{font-size:11px;color:var(--tx2);margin:10px 0 0}
+.empty{padding:28px;text-align:center;color:var(--tx2);font-size:13px;background:var(--s2);border:1px dashed var(--bd);border-radius:var(--r)}
+.sl{display:flex;align-items:center;gap:10px;margin-bottom:8px}.sl label{font-size:13px;color:var(--tx2);width:130px;flex-shrink:0}.sl input{flex:1}
+.sv{min-width:90px;font-size:13px;font-weight:600;text-align:right}
+.rule{font-size:12px;color:var(--tx2);background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:8px 10px;margin:10px 0}
+@media(max-width:600px){body{padding:12px}.sl label{width:90px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="card" id="tong-quan">
+  <div class="head">
+    <div><h1>Thời tiết khu vực phục vụ ngoại nghiệp</h1><p class="sub" id="sub">Tỉnh Gia Lai</p></div>
+    <div class="acts">
+      <button class="btn xl" disabled title="Sẽ làm ở bước sau">&#8681; Xuất Excel tổng quan</button>
+      <button class="btn ico" id="bCfg" title="Cấu hình tiêu chí" aria-label="Cấu hình tiêu chí">&#9881;&#65039;</button>
+      <button class="btn ico" id="bRef" title="Làm mới" aria-label="Làm mới">&#8635;</button>
+    </div>
+  </div>
+  <div id="msg"></div>
+  <div id="alert"></div>
+  <div class="filters">
+    <input id="q" type="search" placeholder="Nhập tên xã, phường cần tra cứu..." aria-label="Tìm xã, phường">
+    <select id="fType" aria-label="Loại"><option value="">Loại: Tất cả</option><option value="Phường">Phường</option><option value="Xã">Xã</option></select>
+    <select id="fAs" aria-label="Đánh giá"><option value="">Đánh giá: Tất cả</option><option value="ok">Đủ điều kiện</option><option value="warn">Cảnh báo</option><option value="bad">Không thuận lợi</option></select>
+    <select id="fSort" aria-label="Sắp xếp"><option value="risk">Sắp xếp: Không thuận lợi trước</option><option value="name">Tên A đến Z</option><option value="rain">Lượng mưa cao nhất</option></select>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+  <div class="pager" id="pager"></div>
+  <p class="src" id="src"></p>
+</section>
+
+<section class="card" id="cau-hinh">
+  <div class="head"><h1>&#9881;&#65039; Cấu hình tiêu chí đánh giá</h1><span class="sub">Áp dụng cho tất cả khu vực &middot; lưu trên trình duyệt này</span></div>
+  <div class="sl"><label for="cMm">Ngưỡng mưa</label><input type="range" id="cMm" min="1" max="60" step="1"><span class="sv" id="vMm"></span></div>
+  <div class="sl"><label for="cH">Số giờ mưa tối đa</label><input type="range" id="cH" min="1" max="24" step="1"><span class="sv" id="vH"></span></div>
+  <div class="sl"><label for="cHm">Mưa tối thiểu tính là giờ mưa</label><input type="range" id="cHm" min="0.1" max="2" step="0.1"><span class="sv" id="vHm"></span></div>
+  <div class="sl"><label for="cSun">Giờ nắng tối thiểu</label><input type="range" id="cSun" min="0" max="12" step="1"><span class="sv" id="vSun"></span></div>
+  <div class="sl"><label for="cCl">Ngưỡng mây tính là nắng</label><input type="range" id="cCl" min="10" max="100" step="5"><span class="sv" id="vCl"></span></div>
+  <div class="rule">Không thuận lợi: lượng mưa cả ngày từ ngưỡng mưa trở lên, hoặc số giờ mưa từ mức tối đa trở lên. Cảnh báo: mưa đạt 20% ngưỡng mưa, hoặc giờ nắng ít hơn mức tối thiểu. Giờ nắng là số ước tính: giờ ban ngày có mây không quá ngưỡng và không mưa.</div>
+  <button class="btn" id="bReset">Khôi phục mặc định</button>
+</section>
+</div>
+
+<script>
+const CRIT_KEY='weather.criteria.v1',CACHE_KEY='weather.cache.v1',TTL=30*60e3,BATCH=45,PER=8;
+const DEF={rain:{maxMm:15,maxHours:5,warnRatio:0.2,hourMm:0.5},sun:{minHours:4,maxCloud:50}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').toLowerCase();
+const vn=n=>n.toFixed(1).replace('.',',');
+let crit=loadCrit(),units=[],data={},stamp=0,page=1,busy=false;
+
+function loadCrit(){try{const c=JSON.parse(localStorage.getItem(CRIT_KEY));
+  if(c&&c.rain&&c.sun&&[c.rain.maxMm,c.rain.maxHours,c.rain.warnRatio,c.sun.minHours,c.sun.maxCloud].every(v=>typeof v==='number'&&v>=0))return c}catch(e){}
+  return JSON.parse(JSON.stringify(DEF))}
+function saveCrit(){crit.updatedAt=new Date().toISOString();try{localStorage.setItem(CRIT_KEY,JSON.stringify(crit))}catch(e){}}
+
+/* ---- dữ liệu thời tiết ---- */
+async function fetchBatch(list){
+  const u=new URL('https://api.open-meteo.com/v1/forecast');
+  u.search=new URLSearchParams({latitude:list.map(x=>x.lat).join(','),longitude:list.map(x=>x.lon).join(','),
+    hourly:'temperature_2m,precipitation,cloud_cover,weather_code,is_day',daily:'precipitation_sum',timezone:'auto',forecast_days:7});
+  const r=await fetch(u);
+  if(!r.ok)throw new Error(r.status===429?'Vượt giới hạn gọi API, hãy thử lại sau ít phút.':'Máy chủ thời tiết trả lỗi '+r.status+'.');
+  const j=await r.json();return Array.isArray(j)?j:[j];
+}
+function compact(o){
+  const h=o.hourly,now=new Date(Date.now()+o.utc_offset_seconds*1000).toISOString().slice(0,13);
+  let i=h.time.findIndex(t=>t.startsWith(now));if(i<0)i=12;
+  return{temp:h.temperature_2m[i],code:h.weather_code[i],day:!!h.is_day[i],p:h.precipitation.slice(0,24),
+    c:h.cloud_cover.slice(0,24),d:h.is_day.slice(0,24),mm:o.daily.precipitation_sum[0],dm:o.daily.precipitation_sum};
+}
+function readCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.data)return c}catch(e){}return null}
+async function load(force){
+  if(busy)return;busy=true;const c=readCache();
+  if(c&&!force&&Date.now()-c.t<TTL){data=c.data;stamp=c.t;busy=false;return render()}
+  $('msg').innerHTML='<div class="banner info"><p class="bt">Đang tải dữ liệu thời tiết cho '+units.length+' khu vực...</p></div>';
+  try{
+    const out={};
+    for(let i=0;i<units.length;i+=BATCH){
+      const list=units.slice(i,i+BATCH),res=await fetchBatch(list);
+      list.forEach((u,k)=>{if(res[k])out[u.id]=compact(res[k])});
+    }
+    data=out;stamp=Date.now();
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({t:stamp,data}))}catch(e){}
+    $('msg').innerHTML='';
+  }catch(e){
+    const why=esc(e.message||'Không kết nối được máy chủ thời tiết.');
+    if(c){data=c.data;stamp=c.t;$('msg').innerHTML='<div class="banner err"><div><p class="bt">Không làm mới được dữ liệu</p><p class="bx">'+why+' Đang hiển thị dữ liệu đã lưu lúc '+hhmm(c.t)+'.</p></div></div>'}
+    else $('msg').innerHTML='<div class="banner err"><div><p class="bt">Chưa có dữ liệu thời tiết</p><p class="bx">'+why+' Kiểm tra kết nối mạng rồi bấm Làm mới.</p></div></div>';
+  }
+  busy=false;render();
+}
+const hhmm=t=>new Date(t).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+
+/* ---- đánh giá theo tiêu chí ---- */
+function evalArea(w){
+  const r=crit.rain,s=crit.sun;
+  const rh=w.p.filter(x=>x>=(r.hourMm||0.5)).length;
+  const sh=w.p.reduce((n,x,i)=>n+(w.d[i]&&w.c[i]<=s.maxCloud&&x<(r.hourMm||0.5)?1:0),0);
+  let lv='ok',why='';
+  if(w.mm>=r.maxMm||rh>=r.maxHours){lv='bad';why=w.mm>=r.maxMm?'Mưa lớn':'Mưa kéo dài'}
+  else if(w.mm>0&&w.mm>=r.warnRatio*r.maxMm){lv='warn';why='Mưa gần ngưỡng'}
+  else if(sh<s.minHours){lv='warn';why='Ít nắng'}
+  return{lv,why,rh,sh};
+}
+const rainLevel=mm=>mm<0.1?'Không mưa':mm<16?'Mưa nhỏ':mm<=50?'Mưa vừa':mm<=100?'Mưa to':'Mưa rất to';
+function wx(w){const c=w.code;
+  if(c<=1)return w.day?['☀️','Nắng']:['🌙','Trời quang'];
+  if(c<=3)return['☁️','Nhiều mây'];if(c===45||c===48)return['🌫️','Sương mù'];
+  if(c>=95)return['⛈️','Dông'];return['🌧️','Mưa'];}
+const short=n=>n.replace(/^xã /,'X. ').replace(/^phường /,'P. ');
+
+/* ---- hiển thị ---- */
+function rows(){return units.filter(u=>data[u.id]).map(u=>({u,w:data[u.id],e:evalArea(data[u.id])}))}
+function render(){
+  const all=rows(),n={ok:0,warn:0,bad:0};all.forEach(x=>n[x.e.lv]++);
+  const nw=units.filter(u=>u.type==='Phường').length;
+  $('sub').textContent='Tỉnh Gia Lai · '+units.length+' xã, phường ('+nw+' phường, '+(units.length-nw)+' xã)';
+  const bad=all.filter(x=>x.e.lv!=='ok').length;
+  $('alert').innerHTML=all.length&&bad?'<div class="banner"><div><p class="bt">⚠️ Cảnh báo thời tiết xấu: '+n.bad+' khu vực không thuận lợi, '+n.warn+' khu vực ở mức cảnh báo</p><p class="bx">'
+    +(n.bad?'Ví dụ: '+all.filter(x=>x.e.lv==='bad').sort((x,y)=>y.w.mm-x.w.mm).slice(0,2).map(x=>esc(short(x.u.name))).join(', ')+'. ':'')
+    +'Cảnh báo được tính lại mỗi lần mở trang hoặc làm mới.</p></div><button id="goBad">Xem khu vực bị cảnh báo</button></div>':'';
+  const g=$('goBad');if(g)g.onclick=()=>{$('fAs').value=n.bad?'bad':'warn';page=1;render();$('grid').scrollIntoView({behavior:'smooth'})};
+  $('chips').innerHTML='<span class="chip">Tổng số khu vực <b>'+all.length+'</b></span><span class="chip ok">Đủ điều kiện <b>'+n.ok+'</b></span><span class="chip warn">Cảnh báo <b>'+n.warn+'</b></span><span class="chip bad">Không thuận lợi <b>'+n.bad+'</b></span>';
+  const q=norm($('q').value.trim()),t=$('fType').value,a=$('fAs').value,s=$('fSort').value;
+  let L=all.filter(x=>(!t||x.u.type===t)&&(!a||x.e.lv===a)&&(!q||norm(x.u.name).includes(q)));
+  const ord={bad:0,warn:1,ok:2};
+  L.sort(s==='name'?(x,y)=>x.u.name.localeCompare(y.u.name,'vi'):s==='rain'?(x,y)=>y.w.mm-x.w.mm:(x,y)=>ord[x.e.lv]-ord[y.e.lv]||y.w.mm-x.w.mm);
+  const pages=Math.max(1,Math.ceil(L.length/PER));page=Math.min(page,pages);
+  const P=L.slice((page-1)*PER,page*PER);
+  $('grid').innerHTML=P.length?P.map(x=>{const[i,lb]=wx(x.w),e=x.e;
+    const txt=e.lv==='ok'?lb+' · đủ điều kiện':e.why+' · '+(e.lv==='bad'?'không thuận lợi':'cảnh báo');
+    return'<div class="box '+(e.lv==='ok'?'':e.lv)+'"><div class="row"><span class="nm">'+esc(short(x.u.name))+'</span><span class="wi">'+i+'</span></div><p class="tp">'+Math.round(x.w.temp)+'°C</p><p class="st '+(e.lv==='ok'?'':e.lv)+'">'+txt+'</p><p class="ex">'+vn(x.w.mm)+' mm · '+rainLevel(x.w.mm)+' · '+e.rh+' giờ mưa · '+e.sh+' giờ nắng</p></div>'}).join('')
+    :'<div class="empty" style="grid-column:1/-1">'+(all.length?'Không có khu vực nào khớp bộ lọc. Hãy đổi từ khóa hoặc bỏ bớt bộ lọc.':'Chưa có dữ liệu thời tiết. Bấm Làm mới để tải lại.')+'</div>';
+  const from=L.length?(page-1)*PER+1:0,to=Math.min(page*PER,L.length);
+  let lo=Math.max(1,page-2),hi=Math.min(pages,lo+4);lo=Math.max(1,hi-4);let btn='';
+  for(let p=lo;p<=hi;p++)btn+='<button data-p="'+p+'" class="'+(p===page?'on':'')+'">'+p+'</button>';
+  $('pager').innerHTML='<span>Hiển thị '+from+' đến '+to+' trên '+L.length+' khu vực ('+PER+' khu vực mỗi trang)</span><div class="pages"><button data-p="'+(page-1)+'" '+(page<=1?'disabled':'')+'>&lsaquo;</button>'+btn+'<button data-p="'+(page+1)+'" '+(page>=pages?'disabled':'')+'>&rsaquo;</button></div>';
+  $('src').textContent=(stamp?'Cập nhật lúc '+hhmm(stamp)+' · ':'')+'Nguồn dữ liệu: Open-Meteo. Giá trị hiện tại lấy theo mô hình dự báo, không phải quan trắc tại trạm. Dữ liệu theo lưới khoảng 11 km nên các xã, phường gần nhau có thể hiện cùng số liệu. Giờ nắng là số ước tính từ độ che phủ mây.';
+}
+
+/* ---- cấu hình ---- */
+function syncCfg(){
+  $('cMm').value=crit.rain.maxMm;$('cH').value=crit.rain.maxHours;$('cSun').value=crit.sun.minHours;$('cCl').value=crit.sun.maxCloud;$('cHm').value=crit.rain.hourMm||0.5;$('vHm').textContent=vn(crit.rain.hourMm||0.5)+' mm/giờ';
+  $('vMm').textContent=crit.rain.maxMm+' mm/ngày';$('vH').textContent=crit.rain.maxHours+' giờ/ngày';
+  $('vSun').textContent=crit.sun.minHours+' giờ/ngày';$('vCl').textContent=crit.sun.maxCloud+'% mây';
+}
+function onCfg(){crit.rain.maxMm=+$('cMm').value;crit.rain.maxHours=+$('cH').value;crit.sun.minHours=+$('cSun').value;crit.sun.maxCloud=+$('cCl').value;crit.rain.hourMm=+$('cHm').value;saveCrit();syncCfg();page=1;render()}
+['cMm','cH','cHm','cSun','cCl'].forEach(id=>$(id).addEventListener('input',onCfg));
+$('bReset').onclick=()=>{crit=JSON.parse(JSON.stringify(DEF));saveCrit();syncCfg();render()};
+$('bCfg').onclick=()=>$('cau-hinh').scrollIntoView({behavior:'smooth'});
+$('bRef').onclick=()=>load(true);
+['q','fType','fAs','fSort'].forEach(id=>$(id).addEventListener('input',()=>{page=1;render()}));
+$('pager').addEventListener('click',e=>{const b=e.target.closest('button[data-p]');if(b&&!b.disabled){page=+b.dataset.p;render();$('tong-quan').scrollIntoView({behavior:'smooth'})}});
+
+/* ---- khởi động ---- */
+syncCfg();
+fetch('data/khu_vuc_gia_lai.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{
+  units=j.units.filter(u=>typeof u.lat==='number'&&typeof u.lon==='number');load(false);
+}).catch(()=>{$('msg').innerHTML='<div class="banner err"><div><p class="bt">Không đọc được danh sách khu vực</p><p class="bx">Kiểm tra file data/khu_vuc_gia_lai.json và mở trang bằng Live Server, không bấm đúp mở trực tiếp file.</p></div></div>'});
+</script>
+</body>
+</html>
