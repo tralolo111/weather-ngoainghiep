@@ -15,35 +15,40 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
 .acts{display:flex;align-items:center;gap:8px}
 .btn{padding:.5rem .9rem;border-radius:var(--r);border:1px solid var(--bd);background:var(--s2);font-size:13px;font-weight:600;cursor:pointer;color:inherit}
 .btn:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.xl{border-color:#86c99a;color:#166534}
-.ico{width:36px;padding:.5rem 0;font-size:16px}
+.btn.xl{border-color:#86c99a;color:#166534}.ico{width:36px;padding:.5rem 0;font-size:16px}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .banner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#fff7ed;border:1px solid var(--bdw);border-radius:var(--r);padding:.65rem .9rem;margin-bottom:12px}
 .banner.info{background:#eff6ff;border-color:#bfdbfe}.banner.err{background:#fdecec;border-color:var(--bdd)}
 .banner p{margin:0}.bt{font-size:13px;font-weight:700;color:#9a3412}.bx{font-size:12px;color:#7c2d12}
 .banner.info .bt,.banner.info .bx{color:#1e3a8a}.banner.err .bt,.banner.err .bx{color:#991b1b}
 .banner button{background:none;border:0;font-size:12px;font-weight:600;color:var(--acc);cursor:pointer;padding:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{padding:6px 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--s2);font-size:12px;font-weight:600;cursor:pointer}
+.tabs button.on{background:#111827;color:#fff;border-color:#111827}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .filters input,.filters select{padding:.5rem .7rem;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;background:var(--s2)}
 .filters input{flex:1;min-width:220px}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .chip{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:6px 12px;font-size:12px}.chip b{font-size:15px;margin-left:4px}
 .chip.ok b{color:var(--ok)}.chip.warn b{color:var(--warn)}.chip.bad b{color:var(--bad)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
 .box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:.75rem}
 .box.bad{border-color:var(--bdd)}.box.warn{border-color:var(--bdw)}
 .row{display:flex;justify-content:space-between;align-items:start;gap:6px}.nm{font-size:14px;font-weight:600}.wi{font-size:18px}
 .tp{font-size:20px;font-weight:600;margin:6px 0 2px}.st{font-size:12px;color:var(--tx2);margin:0}
 .st.bad{color:var(--bad)}.st.warn{color:var(--warn)}.ex{font-size:11px;color:var(--tx2);margin:4px 0 0}
+.strip{display:flex;gap:3px;margin-top:8px}
+.d{flex:1;text-align:center;font-size:10px;line-height:18px;border-radius:4px;background:#dcfce7;color:#166534}
+.d.warn{background:#fef3c7;color:#92400e}.d.bad{background:#fee2e2;color:#991b1b}.d.off{background:#e5e7eb;color:#6b7280}.d.on{outline:2px solid #111827}
 .pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--tx2);flex-wrap:wrap;gap:8px}
 .pages{display:flex;gap:4px}.pages button{min-width:30px;padding:4px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);cursor:pointer;font-size:12px}
 .pages button.on{background:#111827;color:#fff;border-color:#111827}.pages button:disabled{opacity:.4;cursor:default}
 .src{font-size:11px;color:var(--tx2);margin:10px 0 0}
 .empty{padding:28px;text-align:center;color:var(--tx2);font-size:13px;background:var(--s2);border:1px dashed var(--bd);border-radius:var(--r)}
-.sl{display:flex;align-items:center;gap:10px;margin-bottom:8px}.sl label{font-size:13px;color:var(--tx2);width:130px;flex-shrink:0}.sl input{flex:1}
+.sl{display:flex;align-items:center;gap:10px;margin-bottom:8px}.sl label{font-size:13px;color:var(--tx2);width:150px;flex-shrink:0}.sl input{flex:1}
 .sv{min-width:90px;font-size:13px;font-weight:600;text-align:right}
 .rule{font-size:12px;color:var(--tx2);background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:8px 10px;margin:10px 0}
-@media(max-width:600px){body{padding:12px}.sl label{width:90px}}
+@media(max-width:600px){body{padding:12px}.sl label{width:100px}}
 </style>
 </head>
 <body>
@@ -58,12 +63,13 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
     </div>
   </div>
   <div id="msg"></div>
+  <div class="tabs" id="days" role="tablist" aria-label="Chọn ngày"></div>
   <div id="alert"></div>
   <div class="filters">
     <input id="q" type="search" placeholder="Nhập tên xã, phường cần tra cứu..." aria-label="Tìm xã, phường">
     <select id="fType" aria-label="Loại"><option value="">Loại: Tất cả</option><option value="Phường">Phường</option><option value="Xã">Xã</option></select>
     <select id="fAs" aria-label="Đánh giá"><option value="">Đánh giá: Tất cả</option><option value="ok">Đủ điều kiện</option><option value="warn">Cảnh báo</option><option value="bad">Không thuận lợi</option></select>
-    <select id="fSort" aria-label="Sắp xếp"><option value="risk">Sắp xếp: Không thuận lợi trước</option><option value="name">Tên A đến Z</option><option value="rain">Lượng mưa cao nhất</option></select>
+    <select id="fSort" aria-label="Sắp xếp"><option value="risk">Sắp xếp: Không thuận lợi trước</option><option value="name">Tên A đến Z</option><option value="rain">Xác suất mưa trung bình cao nhất</option></select>
   </div>
   <div class="chips" id="chips"></div>
   <div class="grid" id="grid"></div>
@@ -73,27 +79,27 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
 
 <section class="card" id="cau-hinh">
   <div class="head"><h1>&#9881;&#65039; Cấu hình tiêu chí đánh giá</h1><span class="sub">Áp dụng cho tất cả khu vực &middot; lưu trên trình duyệt này</span></div>
-  <div class="sl"><label for="cMm">Ngưỡng mưa</label><input type="range" id="cMm" min="1" max="60" step="1"><span class="sv" id="vMm"></span></div>
-  <div class="sl"><label for="cH">Số giờ mưa tối đa</label><input type="range" id="cH" min="1" max="24" step="1"><span class="sv" id="vH"></span></div>
-  <div class="sl"><label for="cHm">Mưa tối thiểu tính là giờ mưa</label><input type="range" id="cHm" min="0.1" max="2" step="0.1"><span class="sv" id="vHm"></span></div>
+  <div class="sl"><label for="cB">Không thuận lợi từ xác suất</label><input type="range" id="cB" min="30" max="100" step="5"><span class="sv" id="vB"></span></div>
+  <div class="sl"><label for="cW">Cảnh báo từ xác suất</label><input type="range" id="cW" min="10" max="100" step="5"><span class="sv" id="vW"></span></div>
   <div class="sl"><label for="cSun">Giờ nắng tối thiểu</label><input type="range" id="cSun" min="0" max="12" step="1"><span class="sv" id="vSun"></span></div>
   <div class="sl"><label for="cCl">Ngưỡng mây tính là nắng</label><input type="range" id="cCl" min="10" max="100" step="5"><span class="sv" id="vCl"></span></div>
-  <div class="rule">Không thuận lợi: lượng mưa cả ngày từ ngưỡng mưa trở lên, hoặc số giờ mưa từ mức tối đa trở lên. Cảnh báo: mưa đạt 20% ngưỡng mưa, hoặc giờ nắng ít hơn mức tối thiểu. Giờ nắng là số ước tính: giờ ban ngày có mây không quá ngưỡng và không mưa.</div>
+  <div class="rule">Xác suất mưa được tính trung bình trong khung giờ làm việc 06h đến 17h (riêng hôm nay chỉ tính các giờ từ thời điểm xem trở đi). Không thuận lợi: xác suất trung bình từ ngưỡng thứ nhất trở lên. Cảnh báo: từ ngưỡng thứ hai trở lên, hoặc giờ nắng ít hơn mức tối thiểu. Giờ nắng là số ước tính: giờ ban ngày có mây không quá ngưỡng và lượng mưa dưới 0,5 mm.</div>
   <button class="btn" id="bReset">Khôi phục mặc định</button>
 </section>
 </div>
 
 <script>
-const CRIT_KEY='weather.criteria.v1',CACHE_KEY='weather.cache.v1',TTL=30*60e3,BATCH=45,PER=8;
-const DEF={rain:{maxMm:15,maxHours:5,warnRatio:0.2,hourMm:0.5},sun:{minHours:4,maxCloud:50}};
+const CRIT_KEY='weather.criteria.v1',CACHE_KEY='weather.cache.v3',TTL=30*60e3,BATCH=45,PER=8,RAINMM=0.5,W0=6,W1=17,MINH=3;
+const DEF={rain:{badProb:70,warnProb:40},sun:{minHours:4,maxCloud:50}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').toLowerCase();
 const vn=n=>n.toFixed(1).replace('.',',');
-let crit=loadCrit(),units=[],data={},stamp=0,page=1,busy=false;
+const hhmm=t=>new Date(t).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+let crit=loadCrit(),units=[],data={},stamp=0,page=1,busy=false,day=0,autoDay=true;
 
 function loadCrit(){try{const c=JSON.parse(localStorage.getItem(CRIT_KEY));
-  if(c&&c.rain&&c.sun&&[c.rain.maxMm,c.rain.maxHours,c.rain.warnRatio,c.sun.minHours,c.sun.maxCloud].every(v=>typeof v==='number'&&v>=0))return c}catch(e){}
+  if(c&&c.rain&&c.sun&&[c.rain.badProb,c.rain.warnProb,c.sun.minHours,c.sun.maxCloud].every(v=>typeof v==='number'&&v>=0))return c}catch(e){}
   return JSON.parse(JSON.stringify(DEF))}
 function saveCrit(){crit.updatedAt=new Date().toISOString();try{localStorage.setItem(CRIT_KEY,JSON.stringify(crit))}catch(e){}}
 
@@ -101,16 +107,17 @@ function saveCrit(){crit.updatedAt=new Date().toISOString();try{localStorage.set
 async function fetchBatch(list){
   const u=new URL('https://api.open-meteo.com/v1/forecast');
   u.search=new URLSearchParams({latitude:list.map(x=>x.lat).join(','),longitude:list.map(x=>x.lon).join(','),
-    hourly:'temperature_2m,precipitation,cloud_cover,weather_code,is_day',daily:'precipitation_sum',timezone:'auto',forecast_days:7});
+    hourly:'temperature_2m,precipitation,precipitation_probability,cloud_cover,weather_code,is_day',
+    daily:'precipitation_sum,temperature_2m_max',timezone:'auto',forecast_days:7});
   const r=await fetch(u);
   if(!r.ok)throw new Error(r.status===429?'Vượt giới hạn gọi API, hãy thử lại sau ít phút.':'Máy chủ thời tiết trả lỗi '+r.status+'.');
   const j=await r.json();return Array.isArray(j)?j:[j];
 }
 function compact(o){
-  const h=o.hourly,now=new Date(Date.now()+o.utc_offset_seconds*1000).toISOString().slice(0,13);
+  const h=o.hourly,dl=o.daily,now=new Date(Date.now()+o.utc_offset_seconds*1000).toISOString().slice(0,13);
   let i=h.time.findIndex(t=>t.startsWith(now));if(i<0)i=12;
-  return{temp:h.temperature_2m[i],code:h.weather_code[i],day:!!h.is_day[i],p:h.precipitation.slice(0,24),
-    c:h.cloud_cover.slice(0,24),d:h.is_day.slice(0,24),mm:o.daily.precipitation_sum[0],dm:o.daily.precipitation_sum};
+  return{t0:h.time[0].slice(0,10),nh:i,temp:h.temperature_2m[i],code:h.weather_code[i],day:!!h.is_day[i],
+    p:h.precipitation,q:h.precipitation_probability,c:h.cloud_cover,d:h.is_day,mm:dl.precipitation_sum,tm:dl.temperature_2m_max};
 }
 function readCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.data)return c}catch(e){}return null}
 async function load(force){
@@ -133,67 +140,77 @@ async function load(force){
   }
   busy=false;render();
 }
-const hhmm=t=>new Date(t).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
 
-/* ---- đánh giá theo tiêu chí ---- */
-function evalArea(w){
-  const r=crit.rain,s=crit.sun;
-  const rh=w.p.filter(x=>x>=(r.hourMm||0.5)).length;
-  const sh=w.p.reduce((n,x,i)=>n+(w.d[i]&&w.c[i]<=s.maxCloud&&x<(r.hourMm||0.5)?1:0),0);
-  let lv='ok',why='';
-  if(w.mm>=r.maxMm||rh>=r.maxHours){lv='bad';why=w.mm>=r.maxMm?'Mưa lớn':'Mưa kéo dài'}
-  else if(w.mm>0&&w.mm>=r.warnRatio*r.maxMm){lv='warn';why='Mưa gần ngưỡng'}
+/* ---- đánh giá theo xác suất mưa ---- */
+function evalDay(w,k){
+  const r=crit.rain,s=crit.sun,b=k*24,st=Math.max(W0,k===0?(w.nh||0):0);let sq=0,n=0,mp=0,sh=0;
+  for(let j=0;j<24;j++){const x=b+j;
+    if(j>=st&&j<=W1){const q=w.q[x]||0;sq+=q;n++;if(q>mp)mp=q}
+    if(w.d[x]&&w.c[x]<=s.maxCloud&&(w.p[x]||0)<RAINMM)sh++}
+  if(k===0&&n<MINH)return{lv:'off',why:'Hết giờ làm việc',me:0,sh,mp:0,mm:w.mm[k]||0};
+  const me=n?Math.round(sq/n):0;let lv='ok',why='';
+  if(me>=r.badProb){lv='bad';why='Khả năng mưa cao'}
+  else if(me>=r.warnProb){lv='warn';why='Có khả năng mưa'}
   else if(sh<s.minHours){lv='warn';why='Ít nắng'}
-  return{lv,why,rh,sh};
+  return{lv,why,me,sh,mp,mm:w.mm[k]||0};
 }
-const rainLevel=mm=>mm<0.1?'Không mưa':mm<16?'Mưa nhỏ':mm<=50?'Mưa vừa':mm<=100?'Mưa to':'Mưa rất to';
 function wx(w){const c=w.code;
   if(c<=1)return w.day?['☀️','Nắng']:['🌙','Trời quang'];
   if(c<=3)return['☁️','Nhiều mây'];if(c===45||c===48)return['🌫️','Sương mù'];
   if(c>=95)return['⛈️','Dông'];return['🌧️','Mưa'];}
 const short=n=>n.replace(/^xã /,'X. ').replace(/^phường /,'P. ');
+function dlab(t0,k){const d=new Date(t0+'T00:00:00');d.setDate(d.getDate()+k);
+  return{w:['CN','T2','T3','T4','T5','T6','T7'][d.getDay()],dm:d.getDate()+'/'+(d.getMonth()+1)}}
 
 /* ---- hiển thị ---- */
-function rows(){return units.filter(u=>data[u.id]).map(u=>({u,w:data[u.id],e:evalArea(data[u.id])}))}
+function rows(){return units.filter(u=>data[u.id]).map(u=>{const w=data[u.id],es=[0,1,2,3,4,5,6].map(k=>evalDay(w,k));return{u,w,es,e:es[day]}})}
 function render(){
-  const all=rows(),n={ok:0,warn:0,bad:0};all.forEach(x=>n[x.e.lv]++);
-  const nw=units.filter(u=>u.type==='Phường').length;
+  const all=rows(),n={ok:0,warn:0,bad:0};
+  if(autoDay&&all.length){autoDay=false;if(day===0&&all.every(x=>x.es[0].lv==='off')){day=1;return render()}}
+  all.forEach(x=>{n[x.e.lv]=(n[x.e.lv]||0)+1});
+  const nw=units.filter(u=>u.type==='Phường').length,t0=all.length?all[0].w.t0:null;
   $('sub').textContent='Tỉnh Gia Lai · '+units.length+' xã, phường ('+nw+' phường, '+(units.length-nw)+' xã)';
-  const bad=all.filter(x=>x.e.lv!=='ok').length;
-  $('alert').innerHTML=all.length&&bad?'<div class="banner"><div><p class="bt">⚠️ Cảnh báo thời tiết xấu: '+n.bad+' khu vực không thuận lợi, '+n.warn+' khu vực ở mức cảnh báo</p><p class="bx">'
-    +(n.bad?'Ví dụ: '+all.filter(x=>x.e.lv==='bad').sort((x,y)=>y.w.mm-x.w.mm).slice(0,2).map(x=>esc(short(x.u.name))).join(', ')+'. ':'')
-    +'Cảnh báo được tính lại mỗi lần mở trang hoặc làm mới.</p></div><button id="goBad">Xem khu vực bị cảnh báo</button></div>':'';
+  $('days').innerHTML=t0?[0,1,2,3,4,5,6].map(k=>{const l=dlab(t0,k);return'<button role="tab" data-k="'+k+'" class="'+(k===day?'on':'')+'">'+(k?l.w+' '+l.dm:'Hôm nay')+'</button>'}).join(''):'';
+  const dl=t0?dlab(t0,day):{w:'',dm:''},dn=day?dl.w+' '+dl.dm:'hôm nay';
+  const bad=n.bad+n.warn;
+  $('alert').innerHTML=all.length&&bad?'<div class="banner"><div><p class="bt">⚠️ Cảnh báo thời tiết xấu ('+dn+'): '+n.bad+' khu vực không thuận lợi, '+n.warn+' khu vực ở mức cảnh báo</p><p class="bx">'
+    +(n.bad?'Ví dụ: '+all.filter(x=>x.e.lv==='bad').sort((x,y)=>y.e.me-x.e.me).slice(0,2).map(x=>esc(short(x.u.name))).join(', ')+'. ':'')
+    +'Đánh giá được tính lại mỗi lần mở trang hoặc làm mới.</p></div><button id="goBad">Xem khu vực bị cảnh báo</button></div>':'';
   const g=$('goBad');if(g)g.onclick=()=>{$('fAs').value=n.bad?'bad':'warn';page=1;render();$('grid').scrollIntoView({behavior:'smooth'})};
-  $('chips').innerHTML='<span class="chip">Tổng số khu vực <b>'+all.length+'</b></span><span class="chip ok">Đủ điều kiện <b>'+n.ok+'</b></span><span class="chip warn">Cảnh báo <b>'+n.warn+'</b></span><span class="chip bad">Không thuận lợi <b>'+n.bad+'</b></span>';
+  $('chips').innerHTML='<span class="chip">Tổng số khu vực <b>'+all.length+'</b></span><span class="chip ok">Đủ điều kiện <b>'+n.ok+'</b></span><span class="chip warn">Cảnh báo <b>'+n.warn+'</b></span><span class="chip bad">Không thuận lợi <b>'+n.bad+'</b></span>'+(n.off?'<span class="chip">Hết giờ làm việc <b>'+n.off+'</b></span>':'');
   const q=norm($('q').value.trim()),t=$('fType').value,a=$('fAs').value,s=$('fSort').value;
   let L=all.filter(x=>(!t||x.u.type===t)&&(!a||x.e.lv===a)&&(!q||norm(x.u.name).includes(q)));
-  const ord={bad:0,warn:1,ok:2};
-  L.sort(s==='name'?(x,y)=>x.u.name.localeCompare(y.u.name,'vi'):s==='rain'?(x,y)=>y.w.mm-x.w.mm:(x,y)=>ord[x.e.lv]-ord[y.e.lv]||y.w.mm-x.w.mm);
+  const ord={bad:0,warn:1,ok:2,off:3};
+  L.sort(s==='name'?(x,y)=>x.u.name.localeCompare(y.u.name,'vi'):s==='rain'?(x,y)=>y.e.me-x.e.me:(x,y)=>ord[x.e.lv]-ord[y.e.lv]||y.e.me-x.e.me);
   const pages=Math.max(1,Math.ceil(L.length/PER));page=Math.min(page,pages);
   const P=L.slice((page-1)*PER,page*PER);
-  $('grid').innerHTML=P.length?P.map(x=>{const[i,lb]=wx(x.w),e=x.e;
-    const txt=e.lv==='ok'?lb+' · đủ điều kiện':e.why+' · '+(e.lv==='bad'?'không thuận lợi':'cảnh báo');
-    return'<div class="box '+(e.lv==='ok'?'':e.lv)+'"><div class="row"><span class="nm">'+esc(short(x.u.name))+'</span><span class="wi">'+i+'</span></div><p class="tp">'+Math.round(x.w.temp)+'°C</p><p class="st '+(e.lv==='ok'?'':e.lv)+'">'+txt+'</p><p class="ex">'+vn(x.w.mm)+' mm · '+rainLevel(x.w.mm)+' · '+e.rh+' giờ mưa · '+e.sh+' giờ nắng</p></div>'}).join('')
+  $('grid').innerHTML=P.length?P.map(x=>{const e=x.e,c=e.lv==='ok'||e.lv==='off'?'':e.lv;
+    const[i,lb]=wx(x.w),ic=day?(e.lv==='bad'?'🌧️':e.lv==='warn'?'⛅':'☀️'):i;
+    const tp=day?Math.round(x.w.tm[day]):Math.round(x.w.temp);
+    const txt=e.lv==='off'?'Hết giờ làm việc · xem ngày mai':e.lv==='ok'?(day?'Đủ điều kiện':lb+' · đủ điều kiện'):e.why+' · '+(e.lv==='bad'?'không thuận lợi':'cảnh báo');
+    const strip=x.es.map((z,k)=>'<span class="d '+z.lv+(k===day?' on':'')+'" title="'+dlab(x.w.t0,k).w+' '+dlab(x.w.t0,k).dm+': xác suất mưa trung bình '+z.me+'%">'+dlab(x.w.t0,k).w+'</span>').join('');
+    return'<div class="box '+c+'"><div class="row"><span class="nm">'+esc(short(x.u.name))+'</span><span class="wi">'+ic+'</span></div><p class="tp" title="'+(day?'Nhiệt độ cao nhất':'Nhiệt độ hiện tại')+'">'+tp+'°C</p><p class="st '+c+'">'+txt+'</p><p class="ex">'+(e.lv==='off'?'Không đủ giờ làm việc còn lại để đánh giá · ':'Xác suất mưa trung bình '+e.me+'% (cao nhất '+e.mp+'%) · ')+e.sh+' giờ nắng · '+vn(e.mm)+' mm (tham khảo)</p><div class="strip">'+strip+'</div></div>'}).join('')
     :'<div class="empty" style="grid-column:1/-1">'+(all.length?'Không có khu vực nào khớp bộ lọc. Hãy đổi từ khóa hoặc bỏ bớt bộ lọc.':'Chưa có dữ liệu thời tiết. Bấm Làm mới để tải lại.')+'</div>';
   const from=L.length?(page-1)*PER+1:0,to=Math.min(page*PER,L.length);
   let lo=Math.max(1,page-2),hi=Math.min(pages,lo+4);lo=Math.max(1,hi-4);let btn='';
   for(let p=lo;p<=hi;p++)btn+='<button data-p="'+p+'" class="'+(p===page?'on':'')+'">'+p+'</button>';
   $('pager').innerHTML='<span>Hiển thị '+from+' đến '+to+' trên '+L.length+' khu vực ('+PER+' khu vực mỗi trang)</span><div class="pages"><button data-p="'+(page-1)+'" '+(page<=1?'disabled':'')+'>&lsaquo;</button>'+btn+'<button data-p="'+(page+1)+'" '+(page>=pages?'disabled':'')+'>&rsaquo;</button></div>';
-  $('src').textContent=(stamp?'Cập nhật lúc '+hhmm(stamp)+' · ':'')+'Nguồn dữ liệu: Open-Meteo. Giá trị hiện tại lấy theo mô hình dự báo, không phải quan trắc tại trạm. Dữ liệu theo lưới khoảng 11 km nên các xã, phường gần nhau có thể hiện cùng số liệu. Giờ nắng là số ước tính từ độ che phủ mây.';
+  $('src').textContent=(stamp?'Cập nhật lúc '+hhmm(stamp)+' · ':'')+'Nguồn dữ liệu: Open-Meteo. Dữ liệu là dự báo theo mô hình, không phải quan trắc tại trạm, theo lưới khoảng 11 km nên các xã, phường gần nhau có thể hiện cùng số liệu. Xác suất mưa là tỉ lệ các kịch bản dự báo có mưa từ 0,1 mm/giờ. Giờ nắng là số ước tính từ độ che phủ mây.';
 }
 
 /* ---- cấu hình ---- */
 function syncCfg(){
-  $('cMm').value=crit.rain.maxMm;$('cH').value=crit.rain.maxHours;$('cSun').value=crit.sun.minHours;$('cCl').value=crit.sun.maxCloud;$('cHm').value=crit.rain.hourMm||0.5;$('vHm').textContent=vn(crit.rain.hourMm||0.5)+' mm/giờ';
-  $('vMm').textContent=crit.rain.maxMm+' mm/ngày';$('vH').textContent=crit.rain.maxHours+' giờ/ngày';
+  $('cB').value=crit.rain.badProb;$('cW').value=crit.rain.warnProb;$('cSun').value=crit.sun.minHours;$('cCl').value=crit.sun.maxCloud;
+  $('vB').textContent=crit.rain.badProb+'%';$('vW').textContent=crit.rain.warnProb+'%';
   $('vSun').textContent=crit.sun.minHours+' giờ/ngày';$('vCl').textContent=crit.sun.maxCloud+'% mây';
 }
-function onCfg(){crit.rain.maxMm=+$('cMm').value;crit.rain.maxHours=+$('cH').value;crit.sun.minHours=+$('cSun').value;crit.sun.maxCloud=+$('cCl').value;crit.rain.hourMm=+$('cHm').value;saveCrit();syncCfg();page=1;render()}
-['cMm','cH','cHm','cSun','cCl'].forEach(id=>$(id).addEventListener('input',onCfg));
+function onCfg(){crit.rain.badProb=+$('cB').value;crit.rain.warnProb=Math.min(+$('cW').value,crit.rain.badProb);crit.sun.minHours=+$('cSun').value;crit.sun.maxCloud=+$('cCl').value;saveCrit();syncCfg();page=1;render()}
+['cB','cW','cSun','cCl'].forEach(id=>$(id).addEventListener('input',onCfg));
 $('bReset').onclick=()=>{crit=JSON.parse(JSON.stringify(DEF));saveCrit();syncCfg();render()};
 $('bCfg').onclick=()=>$('cau-hinh').scrollIntoView({behavior:'smooth'});
 $('bRef').onclick=()=>load(true);
 ['q','fType','fAs','fSort'].forEach(id=>$(id).addEventListener('input',()=>{page=1;render()}));
+$('days').addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(b){day=+b.dataset.k;page=1;render()}});
 $('pager').addEventListener('click',e=>{const b=e.target.closest('button[data-p]');if(b&&!b.disabled){page=+b.dataset.p;render();$('tong-quan').scrollIntoView({behavior:'smooth'})}});
 
 /* ---- khởi động ---- */
