@@ -64,6 +64,16 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
 .days7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .dc{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:6px 2px;border-radius:8px;border:1px solid var(--bd);background:#dcfce7;cursor:pointer;font-family:inherit}
 .dc.warn{background:#fef3c7}.dc.bad{background:#fee2e2}.dc.off{background:#e5e7eb}.dc.on{outline:2px solid #111827}.dd{font-weight:700}.ic{font-size:16px}
+.tg{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.rn-lay{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;align-items:start}
+.mapb{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:6px}.mapb svg{width:100%;height:auto;display:block}
+.mapb circle{cursor:pointer;stroke:#fff;stroke-width:1.2}.mapb circle:hover{stroke:#111827;stroke-width:2.2}
+.rl{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.rr{display:grid;grid-template-columns:1.4fr 1fr .7fr;gap:8px;align-items:center;padding:7px 10px;border-top:1px solid var(--bd);font-size:13px;cursor:pointer}
+.rr.hd{background:#f3f4f6;font-size:11px;font-weight:700;color:var(--tx2);cursor:default;border-top:0}.rr:not(.hd):hover{background:#f8fafc}
+.rr small{display:block;font-size:11px;color:var(--tx2)}.rbar{height:8px;border-radius:4px;background:#eef2f7;overflow:hidden}.rbar i{display:block;height:100%;border-radius:4px}
+.rv{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+@media(max-width:800px){.rn-lay{grid-template-columns:1fr}}
 @media(max-width:600px){.days7{gap:3px}.dc{font-size:9px}}
 @media(max-width:600px){body{padding:12px}.sl label{width:100px}}
 </style>
@@ -74,6 +84,7 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
   <div class="head">
     <div><h1>Thời tiết khu vực phục vụ ngoại nghiệp</h1><p class="sub" id="sub">Tỉnh Gia Lai</p></div>
     <div class="acts">
+      <button class="btn" id="bRain" title="Xem lượng mưa hiện tại theo khu vực">&#127783;&#65039; Xem mưa trực tiếp</button>
       <button class="btn xl" id="bXlA" title="Xuất Excel theo biểu mẫu đã duyệt">&#8681; Xuất Excel tổng quan</button>
       <button class="btn ico" id="bCfg" title="Cấu hình tiêu chí" aria-label="Cấu hình tiêu chí">&#9881;&#65039;</button>
       <button class="btn ico" id="bRef" title="Làm mới" aria-label="Làm mới">&#8635;</button>
@@ -92,6 +103,25 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
   <div class="grid" id="grid"></div>
   <div class="pager" id="pager"></div>
   <p class="src" id="src"></p>
+</section>
+
+<section class="card" id="mua-truc-tiep" hidden>
+  <div class="head">
+    <div style="display:flex;align-items:center;gap:10px"><button class="btn ico" id="rBack" aria-label="Quay lại danh sách" title="Quay lại">&#8592;</button><div><h1>Xem mưa trực tiếp theo khu vực</h1><p class="sub" id="rSub"></p></div></div>
+    <div class="acts"><label class="tg"><input type="checkbox" id="rOnly" checked> Chỉ hiện khu vực đang mưa</label><button class="btn ico" id="rRef" title="Làm mới" aria-label="Làm mới">&#8635;</button></div>
+  </div>
+  <div class="banner info"><div><p class="bt">Dữ liệu dự báo theo mô hình, không phải ảnh radar</p><p class="bx">Lượng mưa là giá trị của giờ hiện tại do mô hình Open-Meteo dự báo (lưới khoảng 11 km), có thể lệch so với mưa thực tế tại từng xã, phường.</p></div></div>
+  <div class="filters">
+    <input id="rq" type="search" placeholder="Nhập tên xã, phường..." aria-label="Tìm xã, phường">
+    <select id="rType" aria-label="Loại"><option value="">Loại: Tất cả</option><option value="Phường">Phường</option><option value="Xã">Xã</option></select>
+    <select id="rSort" aria-label="Sắp xếp"><option value="mm">Sắp xếp: Lượng mưa cao nhất</option><option value="name">Tên A đến Z</option></select>
+  </div>
+  <div class="rn-lay">
+    <div><div class="mapb" id="rMap"></div><div class="legend" id="rLeg"></div></div>
+    <div class="rl" id="rList"></div>
+  </div>
+  <div class="pager" id="rPager"></div>
+  <p class="src" id="rSrc"></p>
 </section>
 
 <section class="card" id="chi-tiet" hidden>
@@ -190,7 +220,8 @@ function dlab(t0,k){const d=new Date(t0+'T00:00:00');d.setDate(d.getDate()+k);
 /* ---- hiển thị ---- */
 function rows(){return units.filter(u=>data[u.id]).map(u=>{const w=data[u.id],es=[0,1,2,3,4,5,6].map(k=>evalDay(w,k));return{u,w,es,e:es[day]}})}
 function render(){
-  $('chi-tiet').hidden=!sel;$('tong-quan').hidden=!!sel;if(sel)return renderDetail();
+  const isRain=sel==='mua';$('mua-truc-tiep').hidden=!isRain;$('cau-hinh').hidden=isRain;$('chi-tiet').hidden=isRain||!sel;$('tong-quan').hidden=isRain||!!sel;
+  if(isRain)return renderRain();if(sel)return renderDetail();
   const all=rows(),n={ok:0,warn:0,bad:0};
   if(autoDay&&all.length){autoDay=false;if(day===0&&all.every(x=>x.es[0].lv==='off')){day=1;return render()}}
   all.forEach(x=>{n[x.e.lv]=(n[x.e.lv]||0)+1});
@@ -263,10 +294,10 @@ function renderDetail(){
     +'<div class="legend"><span><i class="sw" style="background:#fbbf24"></i>Nắng</span><span><i class="sw" style="background:#3b82f6"></i>Mưa (xác suất từ '+r.badProb+'%)</span><span><i class="sw" style="background:#93c5fd"></i>Có thể mưa (từ '+r.warnProb+'%)</span><span><i class="sw" style="background:#cbd5e1"></i>Nhiều mây, ban đêm</span><span>Gạch chân: khung giờ được tính đánh giá ('+win+'). Cột xanh: xác suất mưa từng giờ.</span></div></div>'
     +'<div class="tb"><h2>Dự báo 7 ngày · '+esc(short(u.name))+'</h2><div class="days7">'+cells+'</div></div>';
 }
-$('bBack').onclick=()=>{location.hash=''};
+$('bBack').onclick=()=>{const t=backTo==='mua'?'mua':'';backTo='';location.hash=t};
 $('dtl').addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(b){day=+b.dataset.k;render()}});
-$('grid').addEventListener('click',e=>{const b=e.target.closest('.box[data-id]');if(b)location.hash=b.dataset.id});
-$('grid').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=e.target.closest('.box[data-id]');if(b)location.hash=b.dataset.id}});
+$('grid').addEventListener('click',e=>{const b=e.target.closest('.box[data-id]');if(b){backTo='';location.hash=b.dataset.id}});
+$('grid').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=e.target.closest('.box[data-id]');if(b){backTo='';location.hash=b.dataset.id}}});
 window.addEventListener('hashchange',()=>{sel=decodeURIComponent(location.hash.slice(1))||null;render();window.scrollTo(0,0)});
 
 /* ---- cấu hình ---- */
@@ -363,6 +394,47 @@ async function exportXlsx(kind){
 }
 $('bXlA').onclick=()=>exportXlsx('A');
 $('bXlD').onclick=()=>exportXlsx('D');
+
+/* ---- màn xem mưa trực tiếp theo khu vực (dữ liệu dự báo, không phải radar) ---- */
+const RN=[{k:'none',t:'Không mưa',c:'#d1d5db'},{k:'low',t:'Mưa nhỏ',c:'#93c5fd'},{k:'mid',t:'Mưa vừa',c:'#3b82f6'},{k:'high',t:'Mưa to',c:'#1d4ed8'}],RNC=Object.fromEntries(RN.map(x=>[x.k,x])),RN_MID=2.5,RN_HIGH=7.6,PER_R=8,RN_MAX=10;
+let rpage=1,backTo='';
+function rainNow(w){const i=w.nh||0,mm=w.p[i]||0;return{mm,q:w.q[i]||0,k:mm>=RN_HIGH?'high':mm>=RN_MID?'mid':mm>=RAINMM?'low':'none'}}
+function mapSvg(all){
+  if(!all.length)return'';
+  const la=all.map(x=>x.u.lat),lo=all.map(x=>x.u.lon),a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),P=18,W=560,k=Math.cos((a0+a1)/2*Math.PI/180);
+  const sc=(W-2*P)/Math.max((o1-o0)*k,1e-6),H=Math.min(640,Math.round((a1-a0)*sc+2*P)),sc2=Math.min(sc,(H-2*P)/Math.max(a1-a0,1e-6));
+  const X=v=>P+(v-o0)*k*sc2,Y=v=>H-P-(v-a0)*sc2,ord={none:0,low:1,mid:2,high:3};
+  const dots=all.slice().sort((x,y)=>ord[x.r.k]-ord[y.r.k]).map(x=>'<circle cx="'+X(x.u.lon).toFixed(1)+'" cy="'+Y(x.u.lat).toFixed(1)+'" r="'+(x.r.k==='none'?4.5:6)+'" fill="'+RNC[x.r.k].c+'" data-id="'+esc(x.u.id)+'" tabindex="0" role="button" aria-label="'+esc(short(x.u.name))+'"><title>'+esc(short(x.u.name))+' · '+vn(x.r.mm)+' mm · '+RNC[x.r.k].t+'</title></circle>').join('');
+  return'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Sơ đồ vị trí các xã, phường theo lượng mưa"><rect x="0.5" y="0.5" width="'+(W-1)+'" height="'+(H-1)+'" rx="6" fill="#f8fafc" stroke="#e2e5e9"/><text x="12" y="20" font-size="12" fill="#6b7280">B ↑</text>'+dots+'</svg>';
+}
+function renderRain(){
+  const all=units.filter(u=>data[u.id]).map(u=>{const w=data[u.id];return{u,w,r:rainNow(w)}});
+  const cnt={none:0,low:0,mid:0,high:0};all.forEach(x=>cnt[x.r.k]++);
+  const hr=all.length?(all[0].w.nh%24):0;
+  $('rSub').textContent='Đang mưa: '+(all.length-cnt.none)+' trên '+all.length+' khu vực · giờ '+pad(hr)+'h'+(stamp?' · cập nhật lúc '+hhmm(stamp):'');
+  $('rMap').innerHTML=all.length?mapSvg(all):'<div class="empty">Chưa có dữ liệu thời tiết. Bấm Làm mới để tải lại.</div>';
+  $('rLeg').innerHTML=RN.map(x=>'<span><i class="sw" style="background:'+x.c+'"></i>'+x.t+' ('+cnt[x.k]+')</span>').join('')
+    +'<span style="flex-basis:100%">Mưa nhỏ: từ '+vn(RAINMM)+' đến dưới '+vn(RN_MID)+' mm/giờ · Mưa vừa: từ '+vn(RN_MID)+' đến dưới '+vn(RN_HIGH)+' mm/giờ · Mưa to: từ '+vn(RN_HIGH)+' mm/giờ trở lên.</span>';
+  const q=norm($('rq').value.trim()),t=$('rType').value,only=$('rOnly').checked,so=$('rSort').value;
+  const L=all.filter(x=>(!only||x.r.k!=='none')&&(!t||x.u.type===t)&&(!q||norm(x.u.name).includes(q)));
+  L.sort(so==='name'?(x,y)=>x.u.name.localeCompare(y.u.name,'vi'):(x,y)=>y.r.mm-x.r.mm||y.r.q-x.r.q);
+  const pages=Math.max(1,Math.ceil(L.length/PER_R));rpage=Math.min(rpage,pages);
+  const P=L.slice((rpage-1)*PER_R,rpage*PER_R);
+  $('rList').innerHTML='<div class="rr hd"><span>Khu vực</span><span>Mức mưa</span><span class="rv">Lượng mưa</span></div>'+(P.length?P.map(x=>
+    '<div class="rr" data-id="'+esc(x.u.id)+'" tabindex="0" role="button" aria-label="Xem chi tiết '+esc(short(x.u.name))+'"><span>'+esc(short(x.u.name))+'<small>'+RNC[x.r.k].t+' · xác suất mưa '+x.r.q+'%</small></span>'
+    +'<span class="rbar"><i style="width:'+Math.min(100,Math.round(x.r.mm/RN_MAX*100))+'%;background:'+RNC[x.r.k].c+'"></i></span><span class="rv">'+vn(x.r.mm)+' mm</span></div>').join('')
+    :'<div class="empty" style="margin:10px">'+(all.length?(only&&!cnt.low&&!cnt.mid&&!cnt.high&&!q&&!t?'Theo dự báo, hiện chưa có khu vực nào mưa từ '+vn(RAINMM)+' mm/giờ. Bỏ chọn “Chỉ hiện khu vực đang mưa” để xem toàn bộ.':'Không có khu vực nào khớp bộ lọc.'):'Chưa có dữ liệu thời tiết.')+'</div>');
+  let lo=Math.max(1,rpage-2),hi=Math.min(pages,lo+4);lo=Math.max(1,hi-4);let btn='';
+  for(let i=lo;i<=hi;i++)btn+='<button data-p="'+i+'" class="'+(i===rpage?'on':'')+'">'+i+'</button>';
+  $('rPager').innerHTML='<span>Hiển thị '+(L.length?(rpage-1)*PER_R+1:0)+' đến '+Math.min(rpage*PER_R,L.length)+' trên '+L.length+' khu vực'+(only?' đang mưa':'')+'</span><div class="pages"><button data-p="'+(rpage-1)+'" '+(rpage<=1?'disabled':'')+'>&lsaquo;</button>'+btn+'<button data-p="'+(rpage+1)+'" '+(rpage>=pages?'disabled':'')+'>&rsaquo;</button></div>';
+  $('rSrc').textContent='Mỗi chấm trên sơ đồ là một xã, phường (vị trí theo tọa độ, không có nền bản đồ); bấm vào chấm hoặc dòng trong danh sách để mở màn hình chi tiết. Nguồn: Open-Meteo, lượng mưa của giờ hiện tại theo mô hình dự báo, không phải radar hay quan trắc tại trạm.';
+}
+const goRain=e=>{const b=e.target.closest('[data-id]');if(b){backTo='mua';location.hash=b.dataset.id}};
+$('rMap').addEventListener('click',goRain);$('rList').addEventListener('click',goRain);
+$('rMap').addEventListener('keydown',e=>{if(e.key==='Enter')goRain(e)});$('rList').addEventListener('keydown',e=>{if(e.key==='Enter')goRain(e)});
+['rq','rType','rSort','rOnly'].forEach(id=>$(id).addEventListener('input',()=>{rpage=1;render()}));
+$('rPager').addEventListener('click',e=>{const b=e.target.closest('button[data-p]');if(b&&!b.disabled){rpage=+b.dataset.p;render()}});
+$('rBack').onclick=()=>{location.hash=''};$('rRef').onclick=()=>load(true);$('bRain').onclick=()=>{location.hash='mua'};
 
 /* ---- khởi động ---- */
 syncCfg();
