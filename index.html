@@ -66,7 +66,7 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
 .dc.warn{background:#fef3c7}.dc.bad{background:#fee2e2}.dc.off{background:#e5e7eb}.dc.on{outline:2px solid #111827}.dd{font-weight:700}.ic{font-size:16px}
 .tg{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
 .rn-lay{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;align-items:start}
-.mapb{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:6px}.mapb svg{width:100%;height:auto;display:block}
+.mapb{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:6px}.mapb>svg{width:100%;height:auto;display:block}
 .mapb circle{cursor:pointer;stroke:#fff;stroke-width:1.2}.mapb circle:hover{stroke:#111827;stroke-width:2.2}
 .rl{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
 .rr{display:grid;grid-template-columns:1.4fr 1fr .7fr;gap:8px;align-items:center;padding:7px 10px;border-top:1px solid var(--bd);font-size:13px;cursor:pointer}
@@ -76,6 +76,9 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
 @media(max-width:800px){.rn-lay{grid-template-columns:1fr}}
 @media(max-width:600px){.days7{gap:3px}.dc{font-size:9px}}
 @media(max-width:600px){body{padding:12px}.sl label{width:100px}}
+.mapb #lf{height:440px;border-radius:6px;background:#e5e7eb;position:relative}
+.mapb .lf-note{position:absolute;left:8px;bottom:26px;z-index:500;background:rgba(255,255,255,.92);border:1px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:11px;color:#9a3412}
+@media(max-width:600px){.mapb #lf{height:320px}}
 </style>
 </head>
 <body>
@@ -399,6 +402,49 @@ $('bXlD').onclick=()=>exportXlsx('D');
 const RN=[{k:'none',t:'Không mưa',c:'#d1d5db'},{k:'low',t:'Mưa nhỏ',c:'#93c5fd'},{k:'mid',t:'Mưa vừa',c:'#3b82f6'},{k:'high',t:'Mưa to',c:'#1d4ed8'}],RNC=Object.fromEntries(RN.map(x=>[x.k,x])),RN_MID=2.5,RN_HIGH=7.6,PER_R=8,RN_MAX=10;
 let rpage=1,backTo='';
 function rainNow(w){const i=w.nh||0,mm=w.p[i]||0;return{mm,q:w.q[i]||0,k:mm>=RN_HIGH?'high':mm>=RN_MID?'mid':mm>=RAINMM?'low':'none'}}
+/* ---- nền bản đồ vệ tinh (Leaflet nạp từ cdnjs khi vào màn #mua; lỗi thì dùng sơ đồ chấm cũ) ---- */
+const LF_VER='1.9.4',
+SAT={url:'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/g/{z}/{y}/{x}.jpg',
+  attr:'Sentinel-2 cloudless &ndash; <a href="https://s2maps.eu" target="_blank" rel="noopener">s2maps.eu</a> by EOX IT Services GmbH (contains modified Copernicus Sentinel data 2020)',nativeZoom:13,maxZoom:15};
+/* Phương án khác (cần xác minh điều khoản trước khi dùng):
+SAT={url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'Powered by Esri &ndash; Esri, Maxar, Earthstar Geographics',nativeZoom:17,maxZoom:17}; */
+let lfState='idle',lmap=null,lgrp=null,lfitted=false,tileWarned=false,tErr=0,tOk=0;
+function loadLeaflet(){
+  if(window.L)return Promise.resolve();
+  return new Promise((ok,no)=>{
+    const c=document.createElement('link');c.rel='stylesheet';c.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/'+LF_VER+'/leaflet.min.css';document.head.appendChild(c);
+    const j=document.createElement('script');j.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/'+LF_VER+'/leaflet.min.js';
+    j.onload=()=>window.L?ok():no(new Error('leaflet'));j.onerror=()=>no(new Error('leaflet'));document.head.appendChild(j);
+    setTimeout(()=>no(new Error('timeout')),10000);
+  });
+}
+function drawMap(all){
+  if(!all.length){lmap&&(lmap.remove(),lmap=null);lfitted=false;$('rMap').innerHTML='<div class="empty">Chưa có dữ liệu thời tiết. Bấm Làm mới để tải lại.</div>';return}
+  if(lfState==='failed'){lmap&&(lmap.remove(),lmap=null);lfitted=false;$('rMap').innerHTML=mapSvg(all);return}
+  if(lfState!=='ready'){
+    if(lfState==='idle'){lfState='loading';loadLeaflet().then(()=>{lfState='ready'}).catch(()=>{lfState='failed'}).then(()=>{if(sel==='mua')renderRain()})}
+    if(!lmap)$('rMap').innerHTML='<div class="empty">Đang tải bản đồ vệ tinh...</div>';
+    return;
+  }
+  if(!lmap||!document.getElementById('lf')){
+    $('rMap').innerHTML='<div id="lf"></div>';tileWarned=false;tErr=0;tOk=0;
+    lmap=L.map('lf',{zoomControl:true,attributionControl:true,minZoom:7,maxZoom:SAT.maxZoom});
+    const tl=L.tileLayer(SAT.url,{attribution:SAT.attr,maxNativeZoom:SAT.nativeZoom,maxZoom:SAT.maxZoom,crossOrigin:true});
+    tl.on('tileload',()=>{tOk++;tileWarned=false;const n=document.querySelector('#lf .lf-note');if(n)n.remove()});
+    tl.on('tileerror',()=>{tErr++;if(tileWarned||tOk>0||tErr<4)return;tileWarned=true;const d=document.createElement('div');d.className='lf-note';d.textContent='Không tải được ảnh vệ tinh (kiểm tra mạng). Các chấm vẫn đúng vị trí.';document.getElementById('lf').appendChild(d)});
+    tl.addTo(lmap);lgrp=L.layerGroup().addTo(lmap);lfitted=false;
+  }
+  lgrp.clearLayers();
+  const ord={none:0,low:1,mid:2,high:3},pts=[];
+  all.slice().sort((x,y)=>ord[x.r.k]-ord[y.r.k]).forEach(x=>{
+    const m=L.circleMarker([x.u.lat,x.u.lon],{radius:x.r.k==='none'?5:7,fillColor:RNC[x.r.k].c,fillOpacity:.92,color:'#fff',weight:1.5});
+    m.bindTooltip(esc(short(x.u.name))+' · '+vn(x.r.mm)+' mm · '+RNC[x.r.k].t);
+    m.on('click',()=>{backTo='mua';location.hash=x.u.id});
+    m.addTo(lgrp);pts.push([x.u.lat,x.u.lon]);
+  });
+  lmap.invalidateSize();
+  if(!lfitted){lmap.fitBounds(pts,{padding:[20,20]});lfitted=true}
+}
 function mapSvg(all){
   if(!all.length)return'';
   const la=all.map(x=>x.u.lat),lo=all.map(x=>x.u.lon),a0=Math.min(...la),a1=Math.max(...la),o0=Math.min(...lo),o1=Math.max(...lo),P=18,W=560,k=Math.cos((a0+a1)/2*Math.PI/180);
@@ -412,7 +458,7 @@ function renderRain(){
   const cnt={none:0,low:0,mid:0,high:0};all.forEach(x=>cnt[x.r.k]++);
   const hr=all.length?(all[0].w.nh%24):0;
   $('rSub').textContent='Đang mưa: '+(all.length-cnt.none)+' trên '+all.length+' khu vực · giờ '+pad(hr)+'h'+(stamp?' · cập nhật lúc '+hhmm(stamp):'');
-  $('rMap').innerHTML=all.length?mapSvg(all):'<div class="empty">Chưa có dữ liệu thời tiết. Bấm Làm mới để tải lại.</div>';
+  drawMap(all);
   $('rLeg').innerHTML=RN.map(x=>'<span><i class="sw" style="background:'+x.c+'"></i>'+x.t+' ('+cnt[x.k]+')</span>').join('')
     +'<span style="flex-basis:100%">Mưa nhỏ: từ '+vn(RAINMM)+' đến dưới '+vn(RN_MID)+' mm/giờ · Mưa vừa: từ '+vn(RN_MID)+' đến dưới '+vn(RN_HIGH)+' mm/giờ · Mưa to: từ '+vn(RN_HIGH)+' mm/giờ trở lên.</span>';
   const q=norm($('rq').value.trim()),t=$('rType').value,only=$('rOnly').checked,so=$('rSort').value;
@@ -427,7 +473,7 @@ function renderRain(){
   let lo=Math.max(1,rpage-2),hi=Math.min(pages,lo+4);lo=Math.max(1,hi-4);let btn='';
   for(let i=lo;i<=hi;i++)btn+='<button data-p="'+i+'" class="'+(i===rpage?'on':'')+'">'+i+'</button>';
   $('rPager').innerHTML='<span>Hiển thị '+(L.length?(rpage-1)*PER_R+1:0)+' đến '+Math.min(rpage*PER_R,L.length)+' trên '+L.length+' khu vực'+(only?' đang mưa':'')+'</span><div class="pages"><button data-p="'+(rpage-1)+'" '+(rpage<=1?'disabled':'')+'>&lsaquo;</button>'+btn+'<button data-p="'+(rpage+1)+'" '+(rpage>=pages?'disabled':'')+'>&rsaquo;</button></div>';
-  $('rSrc').textContent='Mỗi chấm trên sơ đồ là một xã, phường (vị trí theo tọa độ, không có nền bản đồ); bấm vào chấm hoặc dòng trong danh sách để mở màn hình chi tiết. Nguồn: Open-Meteo, lượng mưa của giờ hiện tại theo mô hình dự báo, không phải radar hay quan trắc tại trạm.';
+  $('rSrc').textContent='Mỗi chấm là một xã, phường; vị trí là gần đúng (130 đơn vị tra từ OpenStreetMap, 5 phường Quy Nhơn đo bằng Google Earth), nên có thể lệch so với trung tâm thực tế. Bấm vào chấm hoặc dòng trong danh sách để mở màn hình chi tiết. Nền bản đồ: ảnh vệ tinh Sentinel-2 cloudless (EOX). Nguồn mưa: Open-Meteo, lượng mưa của giờ hiện tại theo mô hình dự báo, không phải radar hay quan trắc tại trạm.';
 }
 const goRain=e=>{const b=e.target.closest('[data-id]');if(b){backTo='mua';location.hash=b.dataset.id}};
 $('rMap').addEventListener('click',goRain);$('rList').addEventListener('click',goRain);
