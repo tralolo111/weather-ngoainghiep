@@ -147,7 +147,7 @@ body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#ee
 </div>
 
 <script>
-const CRIT_KEY='weather.criteria.v1',CACHE_KEY='weather.cache.v4',TTL=30*60e3,BATCH=45,PER=8,RAINMM=0.5,W0=6,W1=17,MINH=3;
+const CRIT_KEY='weather.criteria.v1',CACHE_KEY='weather.cache.v5',TTL=30*60e3,BATCH=45,PER=8,RAINMM=0.5,W0=6,W1=17,MINH=3;
 const DEF={rain:{badProb:70,warnProb:40},sun:{minHours:4,maxCloud:50}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -166,7 +166,7 @@ async function fetchBatch(list){
   const u=new URL('https://api.open-meteo.com/v1/forecast');
   u.search=new URLSearchParams({latitude:list.map(x=>x.lat).join(','),longitude:list.map(x=>x.lon).join(','),
     hourly:'temperature_2m,precipitation,precipitation_probability,cloud_cover,weather_code,is_day,wind_speed_10m',
-    daily:'precipitation_sum,temperature_2m_max',timezone:'auto',forecast_days:7});
+    daily:'precipitation_sum,temperature_2m_max,wind_speed_10m_max',timezone:'auto',forecast_days:7});
   const r=await fetch(u);
   if(!r.ok)throw new Error(r.status===429?'Vượt giới hạn gọi API, hãy thử lại sau ít phút.':'Máy chủ thời tiết trả lỗi '+r.status+'.');
   const j=await r.json();return Array.isArray(j)?j:[j];
@@ -175,8 +175,9 @@ function compact(o){
   const h=o.hourly,dl=o.daily,now=new Date(Date.now()+o.utc_offset_seconds*1000).toISOString().slice(0,13);
   let i=h.time.findIndex(t=>t.startsWith(now));if(i<0)i=12;
   return{t0:h.time[0].slice(0,10),nh:i,tt:h.temperature_2m,ws:h.wind_speed_10m[i],temp:h.temperature_2m[i],code:h.weather_code[i],day:!!h.is_day[i],
-    p:h.precipitation,q:h.precipitation_probability,c:h.cloud_cover,d:h.is_day,mm:dl.precipitation_sum,tm:dl.temperature_2m_max};
+    p:h.precipitation,q:h.precipitation_probability,c:h.cloud_cover,d:h.is_day,mm:dl.precipitation_sum,tm:dl.temperature_2m_max,wm:dl.wind_speed_10m_max};
 }
+function wnd(w,d){const v=d?(w.wm&&w.wm[d]):w.ws;return v==null||isNaN(v)?null:Math.round(v)}
 function readCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.data)return c}catch(e){}return null}
 async function load(force){
   if(busy)return;busy=true;const c=readCache();
@@ -292,7 +293,7 @@ function renderDetail(){
     +'<div class="al '+e.lv+'">'+(e.lv==='ok'?'✅ ':e.lv==='off'?'🕔 ':'⚠️ ')+tt+'<ul>'+rs.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>'
     +'<div class="mg">'+m(day?'Nhiệt độ cao nhất':'Nhiệt độ hiện tại',Math.round(day?w.tm[day]:w.temp)+'°C')
       +m('Xác suất mưa trung bình',e.lv==='off'?'–':e.me+'%')+m('Xác suất mưa cao nhất',e.lv==='off'?'–':e.mp+'%')
-      +m('Lượng mưa cả ngày',vn(e.mm)+' mm')+m('Giờ nắng ước tính',e.sh+' giờ')+(day?'':m('Gió hiện tại',Math.round(w.ws)+' km/h'))+'</div>'
+      +m('Lượng mưa cả ngày',vn(e.mm)+' mm')+m('Giờ nắng ước tính',e.sh+' giờ')+(wnd(w,day)==null?'':m(day?'Gió cao nhất':'Gió hiện tại',wnd(w,day)+' km/h'))+'</div>'
     +'<div class="tb"><h2>Timeline giờ nắng và giờ mưa trong ngày</h2><div class="tlw">'+tl+'</div><div class="bars" aria-label="Xác suất mưa theo giờ">'+bars+'</div><div class="hrs">'+hrs+'</div>'
     +'<div class="legend"><span><i class="sw" style="background:#fbbf24"></i>Nắng</span><span><i class="sw" style="background:#3b82f6"></i>Mưa (xác suất từ '+r.badProb+'%)</span><span><i class="sw" style="background:#93c5fd"></i>Có thể mưa (từ '+r.warnProb+'%)</span><span><i class="sw" style="background:#cbd5e1"></i>Nhiều mây, ban đêm</span><span>Gạch chân: khung giờ được tính đánh giá ('+win+'). Cột xanh: xác suất mưa từng giờ.</span></div></div>'
     +'<div class="tb"><h2>Dự báo 7 ngày · '+esc(short(u.name))+'</h2><div class="days7">'+cells+'</div></div>';
@@ -352,12 +353,12 @@ function mapOverview(){
   m.E5='Ghi chú: đánh giá theo xác suất mưa trung bình trong khung 06h–17h (riêng hôm nay tính từ giờ xem trở đi). Không thuận lợi: từ '+r.badProb+'% trở lên. Cảnh báo: từ '+r.warnProb+'% trở lên, hoặc giờ nắng ít hơn '+s.minHours+' giờ (mây không quá '+s.maxCloud+'%). Lượng mưa (mm) chỉ để tham khảo. Màu ô: xanh = đủ điều kiện, vàng = cảnh báo, đỏ = không thuận lợi, xám = hết giờ làm việc.';
   m.C5=all.length;m.C6=n.ok;m.C7=n.warn;m.C8=n.bad;
   m.D9=day?'Thông tin ngày '+dd.w+' '+dd.dm:'Thông tin hiện tại (hôm nay)';
-  m.D10=day?'Nhiệt độ cao nhất (°C)':'Nhiệt độ hiện tại (°C)';
+  m.D10=day?'Nhiệt độ cao nhất (°C)':'Nhiệt độ hiện tại (°C)';m.H10=day?'Gió cao nhất (km/h)':'Gió hiện tại (km/h)';
   'KLMNOPQ'.split('').forEach((c,k)=>{const l=dx(t0,k);m[c+'10']=(k?l.w:'Hôm nay')+' '+l.dm});
   all.forEach((x,i)=>{const r0=11+i,e=x.e,off=e.lv==='off';
     m['A'+r0]=i+1;m['B'+r0]=cap(x.u.name);m['C'+r0]=x.u.type;
     m['D'+r0]=day?Math.round(x.w.tm[day]):Math.round(x.w.temp);
-    m['E'+r0]=r1(e.mm);m['F'+r0]=off?'—':e.me;m['G'+r0]=e.sh;m['H'+r0]=day?'—':Math.round(x.w.ws);
+    m['E'+r0]=r1(e.mm);m['F'+r0]=off?'—':e.me;m['G'+r0]=e.sh;m['H'+r0]=wnd(x.w,day)==null?'—':wnd(x.w,day);
     m['I'+r0]=LVN[e.lv];m['J'+r0]=e.lv==='ok'?'—':e.why;
     'KLMNOPQ'.split('').forEach((c,k)=>{m[c+r0]=LVN[x.es[k].lv]})});
   return{map:m,name:'TongQuan_ThoiTiet_GiaLai_'+stampName(now)+'.xlsx'};
@@ -367,8 +368,8 @@ function mapDetail(){
   const now=new Date(),es=[0,1,2,3,4,5,6].map(k=>evalDay(w,k)),e=es[day],b=day*24,L=dx(w.t0,day),r=crit.rain,s=crit.sun,R=reasons(e,w,day),off=e.lv==='off',m={};
   const tt={bad:'Không thuận lợi cho ngoại nghiệp',warn:'Cảnh báo',ok:'Đủ điều kiện ngoại nghiệp',off:'Hết giờ làm việc'}[e.lv];
   m.B3=cap(u.name);m.B4=serial(now);m.B5=tt+' – '+R.rs.join('; ');
-  m.A8=day?'Nhiệt độ cao nhất (°C)':'Nhiệt độ hiện tại (°C)';m.A9=Math.round(day?w.tm[day]:w.temp);
-  m.B9=off?'—':e.me;m.E9=off?'—':e.mp;m.K9=e.sh;m.N9=day?'—':Math.round(w.ws);
+  m.A8=day?'Nhiệt độ cao nhất (°C)':'Nhiệt độ hiện tại (°C)';m.A9=Math.round(day?w.tm[day]:w.temp);m.N8=day?'Gió cao nhất (km/h)':'Gió hiện tại (km/h)';
+  m.B9=off?'—':e.me;m.E9=off?'—':e.mp;m.K9=e.sh;m.N9=wnd(w,day)==null?'—':wnd(w,day);
   let sp=0;
   for(let j=0;j<24;j++){const x=b+j,c='BCDEFGHIJKLMNOPQRSTUVWXY'[j],q=w.q[x]||0,p=w.p[x]||0,sun=w.d[x]&&w.c[x]<=s.maxCloud&&p<RAINMM;sp+=p;
     m[c+'13']=q>=r.badProb?'Mưa':q>=r.warnProb?'Có thể mưa':sun?'Nắng':'Nhiều mây';
