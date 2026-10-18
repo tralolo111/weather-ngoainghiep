@@ -262,7 +262,7 @@ function render(){
 
 /* ---- lý do đánh giá (dùng cho màn chi tiết và file Excel) ---- */
 function reasons(e,w,k){
-  const r=crit.rain,s=crit.sun,st0=Math.max(W0,k===0?(w.nh||0):0),win=k===0&&st0>W0?'từ '+st0+'h đến 17h':'06h–17h',rs=[];
+  const r=crit.rain,s=crit.sun,st0=Math.max(W0,k===0?(w.nh||0):0),win=e.lv==='off'?'không còn khung giờ nào hôm nay':(k===0&&st0>W0?'từ '+st0+'h đến 17h':'06h–17h'),rs=[];
   if(e.lv==='off')rs.push('Hôm nay đã gần hết giờ làm việc (06h–17h), chưa đủ giờ để đánh giá. Xem các ngày tiếp theo.');
   else{
     if(e.me>=r.warnProb)rs.push('Xác suất mưa trung bình '+win+' là '+e.me+'%, '+(e.me>=r.badProb?'từ ngưỡng không thuận lợi '+r.badProb+'%':'từ ngưỡng cảnh báo '+r.warnProb+'%'));
@@ -281,7 +281,7 @@ function renderDetail(){
   for(let j=0;j<24;j++){const x=b+j,q=w.q[x]||0,sun=w.d[x]&&w.c[x]<=s.maxCloud&&(w.p[x]||0)<RAINMM;
     const st=q>=r.badProb?'rain':q>=r.warnProb?'maybe':sun?'sun':'cloud';
     const tip=(j<10?'0':'')+j+'h · xác suất mưa '+q+'% · mưa '+vn(w.p[x]||0)+' mm · mây '+w.c[x]+'% · '+Math.round(w.tt[x])+'°C';
-    tl+='<i class="tl '+st+(j>=st0&&j<=W1?' wk':'')+'" title="'+tip+'"></i>';
+    tl+='<i class="tl '+st+(j>=st0&&j<=W1&&e.lv!=='off'?' wk':'')+'" title="'+tip+'"></i>';
     bars+='<i class="bar" title="'+tip+'"><b style="height:'+q+'%"></b></i>';
     hrs+='<span>'+(j%3?'':j)+'</span>';}
   const cells=es.map((z,k)=>{const l=dlab(w.t0,k),ic=z.lv==='bad'?'🌧️':z.lv==='warn'?'⛅':z.lv==='off'?'🌙':'☀️';
