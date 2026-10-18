@@ -177,6 +177,7 @@ function compact(o){
   return{t0:h.time[0].slice(0,10),nh:i,tt:h.temperature_2m,ws:h.wind_speed_10m[i],temp:h.temperature_2m[i],code:h.weather_code[i],day:!!h.is_day[i],
     p:h.precipitation,q:h.precipitation_probability,c:h.cloud_cover,d:h.is_day,mm:dl.precipitation_sum,tm:dl.temperature_2m_max,wm:dl.wind_speed_10m_max};
 }
+function errMsg(e){const t=String((e&&e.message)||e||'');if(e instanceof TypeError||/failed to fetch|networkerror|load failed|network request failed/i.test(t))return 'Không có kết nối mạng hoặc không kết nối được máy chủ. Hãy kiểm tra mạng rồi thử lại.';return t||'Không kết nối được máy chủ thời tiết.'}
 function wnd(w,d){const v=d?(w.wm&&w.wm[d]):w.ws;return v==null||isNaN(v)?null:Math.round(v)}
 function readCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.data)return c}catch(e){}return null}
 async function load(force){
@@ -193,7 +194,7 @@ async function load(force){
     try{localStorage.setItem(CACHE_KEY,JSON.stringify({t:stamp,data}))}catch(e){}
     $('msg').innerHTML='';
   }catch(e){
-    const why=esc(e.message||'Không kết nối được máy chủ thời tiết.');
+    const why=esc(errMsg(e));
     if(c){data=c.data;stamp=c.t;$('msg').innerHTML='<div class="banner err"><div><p class="bt">Không làm mới được dữ liệu</p><p class="bx">'+why+' Đang hiển thị dữ liệu đã lưu lúc '+hhmm(c.t)+'.</p></div></div>'}
     else $('msg').innerHTML='<div class="banner err"><div><p class="bt">Chưa có dữ liệu thời tiết</p><p class="bx">'+why+' Kiểm tra kết nối mạng rồi bấm Làm mới.</p></div></div>';
   }
@@ -393,7 +394,7 @@ async function exportXlsx(kind){
     const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',compression:'DEFLATE'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-  }catch(err){alert('Không xuất được file Excel: '+(err.message||err))}
+  }catch(err){alert('Không xuất được file Excel: '+errMsg(err))}
   finally{btn.disabled=false;btn.innerHTML=old}
 }
 $('bXlA').onclick=()=>exportXlsx('A');
