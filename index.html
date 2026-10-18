@@ -151,7 +151,7 @@ const CRIT_KEY='weather.criteria.v1',CACHE_KEY='weather.cache.v5',TTL=30*60e3,BA
 const DEF={rain:{badProb:70,warnProb:40},sun:{minHours:4,maxCloud:50}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').toLowerCase();
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
 const vn=n=>n.toFixed(1).replace('.',',');
 const hhmm=t=>new Date(t).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
 let crit=loadCrit(),units=[],data={},stamp=0,page=1,busy=false,day=0,autoDay=true,sel=decodeURIComponent(location.hash.slice(1))||null;
